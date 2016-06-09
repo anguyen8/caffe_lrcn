@@ -233,27 +233,27 @@ class CaptionExperiment():
         for batch_index, output in zip(range(image_index, batch_end_index),
                                        output_captions):
           all_captions[batch_index] = output
-      else:
-        for batch_image_index in xrange(image_index, batch_end_index):
-          captions, caption_probs = self.captioner.predict_caption(
-              self.descriptors[batch_image_index], strategy=strategy)
-          best_caption, max_log_prob = None, None
-          for caption, probs in zip(captions, caption_probs):
-            log_prob = gen_stats(probs)['log_p']
-            if best_caption is None or \
-                (best_caption is not None and log_prob > max_log_prob):
-              best_caption, max_log_prob = caption, log_prob
-          all_captions[batch_image_index] = best_caption
+      # else:
+      #   for batch_image_index in xrange(image_index, batch_end_index):
+      #     captions, caption_probs = self.captioner.predict_caption(
+      #         self.descriptors[batch_image_index], strategy=strategy)
+      #     best_caption, max_log_prob = None, None
+      #     for caption, probs in zip(captions, caption_probs):
+      #       log_prob = gen_stats(probs)['log_p']
+      #       if best_caption is None or \
+      #           (best_caption is not None and log_prob > max_log_prob):
+      #         best_caption, max_log_prob = caption, log_prob
+      #     all_captions[batch_image_index] = best_caption
     sys.stdout.write('\n')
 
     # Compute the number of reference files as the maximum number of ground
     # truth captions of any image in the dataset.
-    num_reference_files = 0
-    for captions in self.dataset.values():
-      if len(captions) > num_reference_files:
-        num_reference_files = len(captions)
-    if num_reference_files <= 0:
-      raise Exception('No reference captions.')
+    # num_reference_files = 0
+    # for captions in self.dataset.values():
+    #   if len(captions) > num_reference_files:
+    #     num_reference_files = len(captions)
+    # if num_reference_files <= 0:
+    #   raise Exception('No reference captions.')
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
@@ -262,9 +262,9 @@ class CaptionExperiment():
       os.makedirs(exp_dir)
     # For each image, write out the highest probability caption.
     model_captions = [''] * len(self.images)
-    reference_captions = [([''] * len(self.images)) for _ in xrange(num_reference_files)]
+    # reference_captions = [([''] * len(self.images)) for _ in xrange(num_reference_files)]
     for image_index, image in enumerate(self.images):
-      print image
+      print "+", image
 
       caption = self.captioner.sentence(all_captions[image_index])
       model_captions[image_index] = caption
