@@ -269,29 +269,29 @@ class CaptionExperiment():
       caption = self.captioner.sentence(all_captions[image_index])
       model_captions[image_index] = caption
 
-      for reference_index, (_, caption) in enumerate(self.dataset[image]):
-        caption = ' '.join(caption)
-        reference_captions[reference_index][image_index] = caption
+      # for reference_index, (_, caption) in enumerate(self.dataset[image]):
+      #   caption = ' '.join(caption)
+      #   reference_captions[reference_index][image_index] = caption
 
-      print ">>>> : [", caption, "]"
+      # print ">>>> : [", caption, "]"
       print ">> : [", model_captions[image_index], "]"      
 
-    coco_image_ids = [self.sg.image_path_to_id[image_path]
-                      for image_path in self.images]
-    generation_result = [{
-      'image_id': self.sg.image_path_to_id[image_path],
-      'caption': model_captions[image_index]
-    } for (image_index, image_path) in enumerate(self.images)]
-    json_filename = '%s/generation_result.json' % self.cache_dir
-    print 'Dumping result to file: %s' % json_filename
-    with open(json_filename, 'w') as json_file:
-      json.dump(generation_result, json_file)
-    generation_result = self.sg.coco.loadRes(json_filename)
+    # coco_image_ids = [self.sg.image_path_to_id[image_path]
+    #                   for image_path in self.images]
+    # generation_result = [{
+    #   'image_id': self.sg.image_path_to_id[image_path],
+    #   'caption': model_captions[image_index]
+    # } for (image_index, image_path) in enumerate(self.images)]
+    # json_filename = '%s/generation_result.json' % self.cache_dir
+    # print 'Dumping result to file: %s' % json_filename
+    # with open(json_filename, 'w') as json_file:
+    #   json.dump(generation_result, json_file)
+    # generation_result = self.sg.coco.loadRes(json_filename)
 
-    print ">>> generation:", generation_result
-    coco_evaluator = COCOEvalCap(self.sg.coco, generation_result)
-    coco_evaluator.params['image_id'] = coco_image_ids
-    coco_evaluator.evaluate()
+    # print ">>> generation:", generation_result
+    # coco_evaluator = COCOEvalCap(self.sg.coco, generation_result)
+    # coco_evaluator.params['image_id'] = coco_image_ids
+    # coco_evaluator.evaluate()
 
 def gen_stats(prob):
   stats = {}
