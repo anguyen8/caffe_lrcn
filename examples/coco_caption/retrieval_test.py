@@ -38,7 +38,8 @@ class CaptionExperiment():
     print 'Initialized caption experiment: %d images, %d captions' % \
         (len(self.images), len(self.captions))
 
-    print self.images
+    self.images[0] = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
+    # print "+++", self.images
 
   def init_caption_list(self, dataset):
     self.captions = []
