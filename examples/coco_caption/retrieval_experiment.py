@@ -313,7 +313,7 @@ def gen_stats(prob):
   return stats
 
 def main():
-  MAX_IMAGES = 50  # -1 to use all images
+  MAX_IMAGES = 100  # -1 to use all images
   TAG = 'coco_2layer_factored'
   if MAX_IMAGES >= 0:
     TAG += '_%dimages' % MAX_IMAGES
@@ -323,9 +323,11 @@ def main():
     MODEL_FILENAME = 'lrcn_finetune_trainval_stepsize40k_iter_%d' % ITER
     DATASET_NAME = 'test'
   else:  # eval on val
-    ITER = 100000
-    #MODEL_FILENAME = 'lrcn_finetune_iter_%d' % ITER
-    MODEL_FILENAME = 'lrcn_caffenet_finetune_iter_%d' % ITER
+    #ITER = 100000
+    ITER = 110000
+    #MODEL_FILENAME = 'lrcn_vgg_iter_%d' % ITER
+    #MODEL_FILENAME = 'lrcn_caffenet_finetune_iter_%d' % ITER
+    MODEL_FILENAME = 'lrcn_caffenet_iter_%d' % ITER
     DATASET_NAME = 'val'
   TAG += '_%s' % DATASET_NAME
   #MODEL_DIR = './examples/coco_caption'
