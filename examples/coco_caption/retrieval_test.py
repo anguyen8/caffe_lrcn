@@ -54,33 +54,6 @@ class CaptionExperiment():
       self.descriptors = self.captioner.compute_descriptors(self.images)
       np.savez_compressed(descriptor_filename, descriptors=self.descriptors)
 
-  def score_captions(self, image_index, output_name='probs'):
-    assert image_index < len(self.images)
-    caption_scores_dir = '%s/caption_scores' % self.cache_dir
-    if not os.path.exists(caption_scores_dir):
-      os.makedirs(caption_scores_dir)
-    caption_scores_filename = '%s/scores_image_%06d.pkl' % \
-        (caption_scores_dir, image_index)
-
-    if os.path.exists(caption_scores_filename):
-      with open(caption_scores_filename, 'rb') as caption_scores_file:
-        outputs = pickle.load(caption_scores_file)
-    else:
-      outputs = self.captioner.score_captions(self.descriptors[image_index],
-          self.captions, output_name=output_name, caption_source='gt',
-          verbose=False)
-      self.caption_stats(image_index, outputs)
-      with open(caption_scores_filename, 'wb') as caption_scores_file:
-        pickle.dump(outputs, caption_scores_file)
-    self.caption_scores[image_index] = outputs
-
-  def caption_stats(self, image_index, caption_scores):
-    image_path = self.images[image_index]
-    for caption, score in zip(self.captions, caption_scores):
-      assert caption['caption'] == score['caption']
-      score['stats'] = gen_stats(score['prob'])
-      score['correct'] = (image_path == caption['source_image'])
-
   def eval_image_to_caption(self, image_index, methods=None):
     scores = self.caption_scores[image_index]
     return self.eval_recall(scores, methods=methods)
@@ -144,21 +117,6 @@ class CaptionExperiment():
       print 'Ranking method:', method
       for metric_name_and_value in result.iteritems():
         print '    %s: %f' % metric_name_and_value
-
-  def retrieval_experiment(self):
-    # Compute image descriptors.
-    print 'Computing image descriptors'
-    self.compute_descriptors()
-
-    num_images, num_captions = len(self.images), len(self.captions)
-
-    # For each image, score all captions.
-    for image_index in xrange(num_images):
-      # sys.stdout.write("\rScoring captions for image %d/%d" %
-      #                  (image_index, num_images))
-      # sys.stdout.flush()
-      self.score_captions(image_index)
-    sys.stdout.write('\n')
 
 
   def generation_experiment(self, strategy, max_batch_size=1000):
