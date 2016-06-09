@@ -379,7 +379,7 @@ def main():
   experimenter = CaptionExperiment(captioner, dataset, DATASET_CACHE_DIR, CACHE_DIR, sg)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
-  captioner.set_caption_batch_size(min(MAX_IMAGES * 5, 1000))
+  # captioner.set_caption_batch_size(min(MAX_IMAGES * 5, 1000))
   # experimenter.retrieval_experiment()
 
 if __name__ == "__main__":
