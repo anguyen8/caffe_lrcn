@@ -267,14 +267,7 @@ class CaptionExperiment():
       print "+", image
 
       caption = self.captioner.sentence(all_captions[image_index])
-      model_captions[image_index] = caption
-
-      # for reference_index, (_, caption) in enumerate(self.dataset[image]):
-      #   caption = ' '.join(caption)
-      #   reference_captions[reference_index][image_index] = caption
-
-      # print ">>>> : [", caption, "]"
-      print ">> : [", model_captions[image_index], "]"      
+      print ">> : [", caption, "]"      
 
     # coco_image_ids = [self.sg.image_path_to_id[image_path]
     #                   for image_path in self.images]
