@@ -1,0 +1,1 @@
+/home/anh/workspace/bash-scripts/training_scripts/monitoring/plot_progress.sh
