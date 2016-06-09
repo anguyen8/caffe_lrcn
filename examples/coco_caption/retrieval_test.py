@@ -160,44 +160,6 @@ class CaptionExperiment():
       self.score_captions(image_index)
     sys.stdout.write('\n')
 
-    '''
-    # Compute global caption statistics for normalization.
-    for caption_index in xrange(num_captions):
-      self.normalize_caption_scores(caption_index)
-
-    recall_ranks = [1, 5, 10, 50]
-
-    eval_methods = ['negative_normalized_log_p']
-    # Evaluate caption-to-image retrieval task.
-    self.caption_to_image_ranks = [None] * num_captions
-    for caption_index in xrange(num_captions):
-      sys.stdout.write("\rCaption-to-image evaluation: "
-                       "computing recall for caption %d/%d" %
-                       (caption_index, num_captions))
-      sys.stdout.flush()
-      self.caption_to_image_ranks[caption_index] = \
-          self.eval_caption_to_image(caption_index, methods=eval_methods)
-    sys.stdout.write('\n')
-    self.caption_to_image_recall = \
-         self.recall_results(self.caption_to_image_ranks, recall_ranks)
-    print 'Caption-to-image retrieval results:'
-    self.print_recall_results(self.caption_to_image_recall)
-
-    # Evaluate image-to-caption retrieval task.
-    self.image_to_caption_ranks = [None] * num_images
-    for image_index in xrange(num_images):
-      sys.stdout.write("\rImage-to-caption evaluation: "
-                       "computing recall for image %d/%d" %
-                       (image_index, num_images))
-      sys.stdout.flush()
-      self.image_to_caption_ranks[image_index] = \
-          self.eval_image_to_caption(image_index, methods=eval_methods)
-    sys.stdout.write('\n')
-    self.image_to_caption_recall = \
-        self.recall_results(self.image_to_caption_ranks, recall_ranks)
-    print 'Image-to-caption retrieval results:'
-    self.print_recall_results(self.image_to_caption_recall)
-    '''
 
   def generation_experiment(self, strategy, max_batch_size=1000):
     # Compute image descriptors.
@@ -233,27 +195,6 @@ class CaptionExperiment():
         for batch_index, output in zip(range(image_index, batch_end_index),
                                        output_captions):
           all_captions[batch_index] = output
-      # else:
-      #   for batch_image_index in xrange(image_index, batch_end_index):
-      #     captions, caption_probs = self.captioner.predict_caption(
-      #         self.descriptors[batch_image_index], strategy=strategy)
-      #     best_caption, max_log_prob = None, None
-      #     for caption, probs in zip(captions, caption_probs):
-      #       log_prob = gen_stats(probs)['log_p']
-      #       if best_caption is None or \
-      #           (best_caption is not None and log_prob > max_log_prob):
-      #         best_caption, max_log_prob = caption, log_prob
-      #     all_captions[batch_image_index] = best_caption
-    sys.stdout.write('\n')
-
-    # Compute the number of reference files as the maximum number of ground
-    # truth captions of any image in the dataset.
-    # num_reference_files = 0
-    # for captions in self.dataset.values():
-    #   if len(captions) > num_reference_files:
-    #     num_reference_files = len(captions)
-    # if num_reference_files <= 0:
-    #   raise Exception('No reference captions.')
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
@@ -267,31 +208,9 @@ class CaptionExperiment():
       print "+", image
 
       caption = self.captioner.sentence(all_captions[image_index])
-      # model_captions[image_index] = caption
-
-      # for reference_index, (_, caption) in enumerate(self.dataset[image]):
-      #   caption = ' '.join(caption)
-      #   reference_captions[reference_index][image_index] = caption
 
       print ">>>> : [", caption, "]"
-      # print ">> : [", model_captions[image_index], "]"      
 
-    # coco_image_ids = [self.sg.image_path_to_id[image_path]
-    #                   for image_path in self.images]
-    # generation_result = [{
-    #   'image_id': self.sg.image_path_to_id[image_path],
-    #   'caption': model_captions[image_index]
-    # } for (image_index, image_path) in enumerate(self.images)]
-    # json_filename = '%s/generation_result.json' % self.cache_dir
-    # print 'Dumping result to file: %s' % json_filename
-    # with open(json_filename, 'w') as json_file:
-    #   json.dump(generation_result, json_file)
-    # generation_result = self.sg.coco.loadRes(json_filename)
-
-    # print ">>> generation:", generation_result
-    # coco_evaluator = COCOEvalCap(self.sg.coco, generation_result)
-    # coco_evaluator.params['image_id'] = coco_image_ids
-    # coco_evaluator.evaluate()
 
 def gen_stats(prob):
   stats = {}
