@@ -154,9 +154,9 @@ class CaptionExperiment():
 
     # For each image, score all captions.
     for image_index in xrange(num_images):
-      sys.stdout.write("\rScoring captions for image %d/%d" %
-                       (image_index, num_images))
-      sys.stdout.flush()
+      # sys.stdout.write("\rScoring captions for image %d/%d" %
+      #                  (image_index, num_images))
+      # sys.stdout.flush()
       self.score_captions(image_index)
     sys.stdout.write('\n')
 
@@ -380,7 +380,7 @@ def main():
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
   captioner.set_caption_batch_size(min(MAX_IMAGES * 5, 1000))
-  experimenter.retrieval_experiment()
+  # experimenter.retrieval_experiment()
 
 if __name__ == "__main__":
   main()
