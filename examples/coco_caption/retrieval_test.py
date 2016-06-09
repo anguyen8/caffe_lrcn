@@ -38,6 +38,8 @@ class CaptionExperiment():
     print 'Initialized caption experiment: %d images, %d captions' % \
         (len(self.images), len(self.captions))
 
+    printn self.images
+
   def init_caption_list(self, dataset):
     self.captions = []
     for image, captions in dataset.iteritems():
