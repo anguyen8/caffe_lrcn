@@ -160,7 +160,7 @@ class CaptionExperiment():
       self.score_captions(image_index)
     sys.stdout.write('\n')
 
-    #'''
+    '''
     # Compute global caption statistics for normalization.
     for caption_index in xrange(num_captions):
       self.normalize_caption_scores(caption_index)
@@ -197,7 +197,7 @@ class CaptionExperiment():
         self.recall_results(self.image_to_caption_ranks, recall_ranks)
     print 'Image-to-caption retrieval results:'
     self.print_recall_results(self.image_to_caption_recall)
-    #'''
+    '''
 
   def generation_experiment(self, strategy, max_batch_size=1000):
     # Compute image descriptors.
