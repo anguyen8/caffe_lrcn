@@ -54,70 +54,6 @@ class CaptionExperiment():
       self.descriptors = self.captioner.compute_descriptors(self.images)
       np.savez_compressed(descriptor_filename, descriptors=self.descriptors)
 
-  def eval_image_to_caption(self, image_index, methods=None):
-    scores = self.caption_scores[image_index]
-    return self.eval_recall(scores, methods=methods)
-
-  def eval_caption_to_image(self, caption_index, methods=None):
-    scores = [s[caption_index] for s in self.caption_scores]
-    return self.eval_recall(scores, methods=methods)
-
-  def normalize_caption_scores(self, caption_index, stats=['log_p', 'log_p_word']):
-    scores = [s[caption_index] for s in self.caption_scores]
-    for stat in stats:
-      log_stat_scores = np.array([score['stats'][stat] for score in scores])
-      stat_scores = np.exp(log_stat_scores)
-      mean_stat_score = np.mean(stat_scores)
-      log_mean_stat_score = np.log(mean_stat_score)
-      for log_stat_score, score in zip(log_stat_scores, scores):
-        score['stats']['normalized_' + stat] = log_stat_score - log_mean_stat_score
-
-  def eval_recall(self, scores, methods=None, neg_prefix='negative_'):
-    if methods is None:
-      # rank on all stats, and all their inverses
-      methods = scores[0]['stats'].keys()
-      methods += [neg_prefix + method for method in methods]
-    correct_ranks = {}
-    for method in methods:
-      if method.startswith(neg_prefix):
-        multiplier = -1
-        method_key = method[len(neg_prefix):]
-      else:
-        multiplier = 1
-        method_key = method
-      sort_key = lambda s: multiplier * s['stats'][method_key]
-      ranked_scores = sorted(scores, key=sort_key)
-      for index, score in enumerate(ranked_scores):
-        if score['correct']:
-          correct_ranks[method] = index
-          break
-    return correct_ranks
-
-  def recall_results(self, correct_ranks, recall_ranks=[]):
-    num_instances = float(len(correct_ranks))
-    assert num_instances > 0
-    methods = correct_ranks[0].keys()
-    results = {}
-    for method in methods:
-       method_correct_ranks = \
-           np.array([correct_rank[method] for correct_rank in correct_ranks])
-       r = OrderedDict()
-       r['mean'] = np.mean(method_correct_ranks)
-       r['median'] = np.median(method_correct_ranks)
-       r['mean (1-indexed)'] = r['mean'] + 1
-       r['median (1-indexed)'] = r['median'] + 1
-       for recall_rank in recall_ranks:
-         r['R@%d' % recall_rank] = \
-             np.where(method_correct_ranks < recall_rank)[0].shape[0] / num_instances
-       results[method] = r
-    return results
-
-  def print_recall_results(self, results):
-    for method, result in results.iteritems():
-      print 'Ranking method:', method
-      for metric_name_and_value in result.iteritems():
-        print '    %s: %f' % metric_name_and_value
-
 
   def generation_experiment(self, strategy, max_batch_size=1000):
     # Compute image descriptors.
@@ -169,25 +105,6 @@ class CaptionExperiment():
 
       print ">>>> : [", caption, "]"
 
-
-def gen_stats(prob):
-  stats = {}
-  stats['length'] = len(prob)
-  stats['log_p'] = 0.0
-  eps = 1e-12
-  for p in prob:
-    assert 0.0 <= p <= 1.0
-    stats['log_p'] += np.log(max(eps, p))
-  stats['log_p_word'] = stats['log_p'] / stats['length']
-  try:
-    stats['perplex'] = np.exp(-stats['log_p'])
-  except OverflowError:
-    stats['perplex'] = float('inf')
-  try:
-    stats['perplex_word'] = np.exp(-stats['log_p_word'])
-  except OverflowError:
-    stats['perplex_word'] = float('inf')
-  return stats
 
 def main():
   MAX_IMAGES = 1  # -1 to use all images
