@@ -313,7 +313,7 @@ def gen_stats(prob):
   return stats
 
 def main():
-  MAX_IMAGES = 100  # -1 to use all images
+  MAX_IMAGES = 1  # -1 to use all images
   TAG = 'coco_2layer_factored'
   if MAX_IMAGES >= 0:
     TAG += '_%dimages' % MAX_IMAGES
@@ -367,7 +367,7 @@ def main():
   if MAX_IMAGES < 0: MAX_IMAGES = len(dataset.keys())
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
-  beam_size = 5
+  beam_size = 1
   generation_strategy = {'type': 'beam', 'beam_size': beam_size}
   if generation_strategy['type'] == 'beam':
     strategy_name = 'beam%d' % generation_strategy['beam_size']
