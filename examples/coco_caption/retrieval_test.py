@@ -38,23 +38,20 @@ def main():
 
   generation_strategy = {'type': 'beam', 'beam_size': 1}
 
-  # image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
-  image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
+  image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
+  # image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
 
   descriptors = captioner.compute_descriptors([image_path])
 
   # Generate captions for all images.
   temp = float('inf')
-  output_captions, output_probs = captioner.sample_captions(
+  output_captions, _ = captioner.sample_captions(
         descriptors[0], temp=temp)
 
   #print ">>> output_captions", output_captions
   caption = output_captions[0]
   words_caption = captioner.sentence(caption)
   print ">>>> : [", words_caption, "]"
-
-  # experimenter = CaptionExperiment(captioner, image_path=image_path)
-  # experimenter.generation_experiment()
 
 if __name__ == "__main__":
   main()
