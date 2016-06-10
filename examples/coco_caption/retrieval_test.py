@@ -27,18 +27,10 @@ class CaptionExperiment():
     self.captioner = captioner
     
     self.images = dataset.keys()
-    self.init_caption_list(dataset)
+    # self.init_caption_list(dataset)
 
     print 'Initialized caption experiment: %d images, %d captions' % \
         (len(self.images), len(self.captions))
-
-  def init_caption_list(self, dataset):
-    self.captions = []
-    for image, captions in dataset.iteritems():
-      for caption, _ in captions:
-        self.captions.append({'source_image': image, 'caption': caption})
-    # Sort by length for performance.
-    self.captions.sort(key=lambda c: len(c['caption']))
 
   def compute_descriptors(self):
     self.descriptors = self.captioner.compute_descriptors(self.images)
