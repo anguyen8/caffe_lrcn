@@ -63,6 +63,8 @@ class CaptionExperiment():
       sys.stdout.write("\rGenerating captions for image %d/%d" %
                        (image_index, num_images))
       sys.stdout.flush()
+
+      print "==== do_batches", do_batches
       if do_batches:
         if strategy['type'] == 'beam' or \
             ('temp' in strategy and strategy['temp'] == float('inf')):
@@ -82,6 +84,7 @@ class CaptionExperiment():
     # each set of reference captions as a list of len(self.images) strings.
     # For each image, write out the highest probability caption.
     model_captions = [''] * len(self.images)
+
     # reference_captions = [([''] * len(self.images)) for _ in xrange(num_reference_files)]
     for image_index, image in enumerate(self.images):
       print "+", image
