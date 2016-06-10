@@ -43,12 +43,15 @@ def main():
 
   # Generate captions for all images.
   temp = float('inf')
-  output_captions, _ = captioner.sample_captions( descriptor, temp=temp )
+  # output_captions, _ = captioner.sample_captions( descriptor, temp=temp )
+  # caption = output_captions[0]
+  strategy = { "type": "sample", "temp": float("inf")}
+  caption, _ = self.sample_caption(descriptor, strategy=strategy)
 
   # print "output_captions", len(output_captions)
 
   #print ">>> output_captions", output_captions
-  caption = output_captions[0]
+  
   words_caption = captioner.sentence(caption)
   print ">>>> : [", words_caption, "]"
 
