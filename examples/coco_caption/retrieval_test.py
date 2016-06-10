@@ -119,7 +119,6 @@ def main():
   IMAGE_NET_FILE = './models/bvlc_reference_caffenet/deploy.prototxt'
   LSTM_NET_FILE = './examples/coco_caption/lrcn_word_to_preds.deploy.prototxt'
   NET_TAG = '%s_%s' % (TAG, MODEL_FILENAME)
-      str(MAX_IMAGES) if MAX_IMAGES >= 0 else 'all')
   VOCAB_FILE = './examples/coco_caption/h5_data/buffer_100/vocabulary.txt'
   DEVICE_ID = 0
   with open(VOCAB_FILE, 'r') as vocab_file:
