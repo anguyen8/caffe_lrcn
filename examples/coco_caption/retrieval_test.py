@@ -148,19 +148,23 @@ def main():
   sg = CocoSequenceGenerator(coco, BUFFER_SIZE, image_root, vocab=vocab,
                              align=False, shuffle=False)
   dataset = {}
-  for image_path, sentence in sg.image_sentence_pairs:
-    if image_path not in dataset:
-      dataset[image_path] = []
-    dataset[image_path].append((sg.line_to_stream(sentence), sentence))
-  print 'Original dataset contains %d images' % len(dataset.keys())
-  if 0 <= MAX_IMAGES < len(dataset.keys()):
-    all_keys = dataset.keys()
-    perm = np.random.permutation(len(all_keys))[:MAX_IMAGES]
-    chosen_keys = set([all_keys[p] for p in perm])
-    for key in all_keys:
-      if key not in chosen_keys:
-        del dataset[key]
-    print 'Reduced dataset to %d images' % len(dataset.keys())
+  dataset["/home/anh/src/caffe_lrcn/images/brambling.jpg"] = [""]
+
+  # for image_path, sentence in sg.image_sentence_pairs:
+  #   if image_path not in dataset:
+  #     dataset[image_path] = []
+  #   dataset[image_path].append((sg.line_to_stream(sentence), sentence))
+
+
+  # print 'Original dataset contains %d images' % len(dataset.keys())
+  # if 0 <= MAX_IMAGES < len(dataset.keys()):
+  #   all_keys = dataset.keys()
+  #   perm = np.random.permutation(len(all_keys))[:MAX_IMAGES]
+  #   chosen_keys = set([all_keys[p] for p in perm])
+  #   for key in all_keys:
+  #     if key not in chosen_keys:
+  #       del dataset[key]
+  #   print 'Reduced dataset to %d images' % len(dataset.keys())
   if MAX_IMAGES < 0: MAX_IMAGES = len(dataset.keys())
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
