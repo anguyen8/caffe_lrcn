@@ -93,23 +93,14 @@ class CaptionExperiment():
 
 def main():
   MAX_IMAGES = 1  # -1 to use all images
-  TAG = 'coco_2layer_factored'
-  if MAX_IMAGES >= 0:
-    TAG += '_%dimages' % MAX_IMAGES
-  eval_on_test = False
-  if eval_on_test:
-    ITER = 100000
-    MODEL_FILENAME = 'lrcn_finetune_trainval_stepsize40k_iter_%d' % ITER
-    DATASET_NAME = 'test'
-  else:  # eval on val
-    #ITER = 100000
-    ITER = 110000
-    #MODEL_FILENAME = 'lrcn_vgg_iter_%d' % ITER
-    #MODEL_FILENAME = 'lrcn_caffenet_finetune_iter_%d' % ITER
-    MODEL_FILENAME = 'lrcn_caffenet_iter_%d' % ITER
-    DATASET_NAME = 'val'
+  
+  #ITER = 100000
+  ITER = 110000
+  #MODEL_FILENAME = 'lrcn_vgg_iter_%d' % ITER
+  #MODEL_FILENAME = 'lrcn_caffenet_finetune_iter_%d' % ITER
+  MODEL_FILENAME = 'lrcn_caffenet_iter_%d' % ITER
+  DATASET_NAME = 'val'
 
-  TAG += '_%s' % DATASET_NAME
   #MODEL_DIR = './examples/coco_caption'
   MODEL_DIR = "/raid/anh/from_jeffdonahue_lrcn"
   MODEL_FILE = '%s/%s.caffemodel' % (MODEL_DIR, MODEL_FILENAME)
@@ -118,7 +109,6 @@ def main():
   #MODEL_FILE = '%s/%s.caffemodel' % ("/raid/anh/from_jeffdonahue_lrcn", "lrcn_caffenet_finetune_iter_100000")
   IMAGE_NET_FILE = './models/bvlc_reference_caffenet/deploy.prototxt'
   LSTM_NET_FILE = './examples/coco_caption/lrcn_word_to_preds.deploy.prototxt'
-  NET_TAG = '%s_%s' % (TAG, MODEL_FILENAME)
   VOCAB_FILE = './examples/coco_caption/h5_data/buffer_100/vocabulary.txt'
   DEVICE_ID = 0
   with open(VOCAB_FILE, 'r') as vocab_file:
