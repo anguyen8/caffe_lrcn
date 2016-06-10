@@ -57,7 +57,7 @@ class CaptionExperiment():
     batch_size = min(max_batch_size, num_images) if do_batches else 1
 
     # Generate captions for all images.
-    all_captions = [None] * num_images
+    caption = None
     for image_index in xrange(0, num_images, batch_size):
       batch_end_index = min(image_index + batch_size, num_images)
       sys.stdout.write("\rGenerating captions for image %d/%d" %
@@ -76,7 +76,7 @@ class CaptionExperiment():
 
         for batch_index, output in zip(range(image_index, batch_end_index),
                                        output_captions):
-          all_captions[batch_index] = output
+          caption = output
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
@@ -86,9 +86,9 @@ class CaptionExperiment():
     for image_index, image in enumerate(self.images):
       print "+", image
 
-      caption = self.captioner.sentence(all_captions[image_index])
+      words_caption = self.captioner.sentence(caption)
 
-      print ">>>> : [", caption, "]"
+      print ">>>> : [", words_caption, "]"
 
 
 def main():
