@@ -148,7 +148,7 @@ def main():
   sg = CocoSequenceGenerator(coco, BUFFER_SIZE, image_root, vocab=vocab,
                              align=False, shuffle=False)
   dataset = {}
-  dataset["/home/anh/src/caffe_lrcn/images/brambling.jpg"] = [""]
+  dataset["/home/anh/src/caffe_lrcn/images/brambling.jpg"] = [("", "")]
 
   # for image_path, sentence in sg.image_sentence_pairs:
   #   if image_path not in dataset:
