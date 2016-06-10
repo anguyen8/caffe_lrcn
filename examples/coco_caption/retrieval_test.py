@@ -29,8 +29,8 @@ class CaptionExperiment():
     self.images = dataset.keys()
     # self.init_caption_list(dataset)
 
-    print 'Initialized caption experiment: %d images, %d captions' % \
-        (len(self.images), len(self.captions))
+    # print 'Initialized caption experiment: %d images' % \
+        # (len(self.images))
 
   def compute_descriptors(self):
     self.descriptors = self.captioner.compute_descriptors(self.images)
