@@ -25,7 +25,7 @@ class CaptionExperiment():
   # dataset is a dict: image path -> [caption1, caption2, ...]
   def __init__(self, captioner, dataset, dataset_cache_dir, cache_dir, sg):
     self.captioner = captioner
-    self.sg = sg
+    # self.sg = sg
     self.dataset_cache_dir = dataset_cache_dir
     self.cache_dir = cache_dir
     for d in [dataset_cache_dir, cache_dir]:
@@ -143,6 +143,7 @@ def main():
   DEVICE_ID = 0
   with open(VOCAB_FILE, 'r') as vocab_file:
     vocab = [line.strip() for line in vocab_file.readlines()]
+  
   coco = COCO(COCO_ANNO_PATH % DATASET_NAME)
   image_root = COCO_IMAGE_PATTERN % DATASET_NAME
   sg = CocoSequenceGenerator(coco, BUFFER_SIZE, image_root, vocab=vocab,
