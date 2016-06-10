@@ -23,9 +23,8 @@ from pycocoevalcap.eval import COCOEvalCap
 class CaptionExperiment():
   # captioner is an initialized Captioner (captioner.py)
   # dataset is a dict: image path -> [caption1, caption2, ...]
-  def __init__(self, captioner, dataset, dataset_cache_dir, cache_dir, sg):
+  def __init__(self, captioner, dataset, dataset_cache_dir, cache_dir):
     self.captioner = captioner
-    # self.sg = sg
     self.dataset_cache_dir = dataset_cache_dir
     self.cache_dir = cache_dir
     for d in [dataset_cache_dir, cache_dir]:
