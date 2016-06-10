@@ -23,24 +23,21 @@ from pycocoevalcap.eval import COCOEvalCap
 class CaptionExperiment():
   # captioner is an initialized Captioner (captioner.py)
   # dataset is a dict: image path -> [caption1, caption2, ...]
-  def __init__(self, captioner, dataset):
+  def __init__(self, captioner, image_path):
     self.captioner = captioner
     
-    self.images = dataset.keys()
-    # self.init_caption_list(dataset)
-
-    # print 'Initialized caption experiment: %d images' % \
-        # (len(self.images))
+    self.image = image_path
 
   def compute_descriptors(self):
-    self.descriptors = self.captioner.compute_descriptors(self.images)
+    self.descriptors = self.captioner.compute_descriptors([self.image])
 
   def generation_experiment(self, strategy, max_batch_size=1000):
     # Compute image descriptors.
     print 'Computing image descriptors'
     self.compute_descriptors()
 
-    num_images = len(self.images)
+    # num_images = len(self.images)
+    num_images = 1
     batch_size = 1
 
     # Generate captions for all images.
@@ -58,15 +55,16 @@ class CaptionExperiment():
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
     # For each image, write out the highest probability caption.
-    model_captions = [''] * len(self.images)
+    model_captions = ['']
 
     # reference_captions = [([''] * len(self.images)) for _ in xrange(num_reference_files)]
-    for image_index, image in enumerate(self.images):
-      print "+", image
+    # for image_index, image in enumerate(self.images):
+    
+    # print "+", image
 
-      words_caption = self.captioner.sentence(caption)
+    words_caption = self.captioner.sentence(caption)
 
-      print ">>>> : [", words_caption, "]"
+    print ">>>> : [", words_caption, "]"
 
 
 def main():
@@ -92,9 +90,6 @@ def main():
   with open(VOCAB_FILE, 'r') as vocab_file:
     vocab = [line.strip() for line in vocab_file.readlines()]
   
-  dataset = {}
-  dataset["/home/anh/src/caffe_lrcn/images/brambling.jpg"] = [("", "")]
-
   if MAX_IMAGES < 0: MAX_IMAGES = len(dataset.keys())
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
@@ -109,7 +104,8 @@ def main():
   # else:
   #   raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
 
-  experimenter = CaptionExperiment(captioner, dataset)
+  image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
+  experimenter = CaptionExperiment(captioner, image_path=image_path)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
 
