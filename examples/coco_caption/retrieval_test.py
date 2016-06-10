@@ -16,22 +16,17 @@ np.random.seed(seed=0)
 # from coco_to_hdf5_data import *
 from test_captioner import Captioner
 
-# COCO_EVAL_PATH = './data/coco/coco-caption-eval'
-# sys.path.append(COCO_EVAL_PATH)
-# from pycocoevalcap.eval import COCOEvalCap
-
 class CaptionExperiment():
   # captioner is an initialized Captioner (captioner.py)
   # dataset is a dict: image path -> [caption1, caption2, ...]
   def __init__(self, captioner, image_path):
     self.captioner = captioner
-    
     self.image = image_path
 
   def compute_descriptors(self):
     self.descriptors = self.captioner.compute_descriptors([self.image])
 
-  def generation_experiment(self, strategy, max_batch_size=1000):
+  def generation_experiment(self):
     # Compute image descriptors.
     print 'Computing image descriptors'
     self.compute_descriptors()
@@ -54,19 +49,12 @@ class CaptionExperiment():
 def main():
   MAX_IMAGES = 1  # -1 to use all images
   
-  #ITER = 100000
   ITER = 110000
-  #MODEL_FILENAME = 'lrcn_vgg_iter_%d' % ITER
-  #MODEL_FILENAME = 'lrcn_caffenet_finetune_iter_%d' % ITER
   MODEL_FILENAME = 'lrcn_caffenet_iter_%d' % ITER
   DATASET_NAME = 'val'
 
-  #MODEL_DIR = './examples/coco_caption'
   MODEL_DIR = "/raid/anh/from_jeffdonahue_lrcn"
   MODEL_FILE = '%s/%s.caffemodel' % (MODEL_DIR, MODEL_FILENAME)
-  #MODEL_FILE = '%s/%s.caffemodel' % (MODEL_DIR, "lrcn_iter_110000") # Same caption
-  #MODEL_FILE = '%s/%s.caffemodel' % ("/raid/anh/from_jeffdonahue_lrcn", "lrcn_caffenet_iter_110000")  # WORKING!
-  #MODEL_FILE = '%s/%s.caffemodel' % ("/raid/anh/from_jeffdonahue_lrcn", "lrcn_caffenet_finetune_iter_100000")
   IMAGE_NET_FILE = './models/bvlc_reference_caffenet/deploy.prototxt'
   LSTM_NET_FILE = './examples/coco_caption/lrcn_word_to_preds.deploy.prototxt'
   VOCAB_FILE = './examples/coco_caption/h5_data/buffer_100/vocabulary.txt'
@@ -92,7 +80,7 @@ def main():
   image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
   experimenter = CaptionExperiment(captioner, image_path=image_path)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
-  experimenter.generation_experiment(generation_strategy)
+  experimenter.generation_experiment()
 
 if __name__ == "__main__":
   main()
