@@ -25,19 +25,16 @@ class CaptionExperiment():
   # dataset is a dict: image path -> [caption1, caption2, ...]
   def __init__(self, captioner, dataset, dataset_cache_dir, cache_dir):
     self.captioner = captioner
-    self.dataset_cache_dir = dataset_cache_dir
+    # self.dataset_cache_dir = dataset_cache_dir
     self.cache_dir = cache_dir
     for d in [dataset_cache_dir, cache_dir]:
       if not os.path.exists(d): os.makedirs(d)
-    self.dataset = dataset
+    # self.dataset = dataset
     self.images = dataset.keys()
     self.init_caption_list(dataset)
-    self.caption_scores = [None] * len(self.images)
 
     print 'Initialized caption experiment: %d images, %d captions' % \
         (len(self.images), len(self.captions))
-
-    print "+++", self.images
 
   def init_caption_list(self, dataset):
     self.captions = []
@@ -48,12 +45,13 @@ class CaptionExperiment():
     self.captions.sort(key=lambda c: len(c['caption']))
 
   def compute_descriptors(self):
-    descriptor_filename = '%s/descriptors.npz' % self.dataset_cache_dir
-    if os.path.exists(descriptor_filename):
-      self.descriptors = np.load(descriptor_filename)['descriptors']
-    else:
-      self.descriptors = self.captioner.compute_descriptors(self.images)
-      np.savez_compressed(descriptor_filename, descriptors=self.descriptors)
+    self.descriptors = self.captioner.compute_descriptors(self.images)
+    # descriptor_filename = '%s/descriptors.npz' % self.dataset_cache_dir
+    # if os.path.exists(descriptor_filename):
+    #   self.descriptors = np.load(descriptor_filename)['descriptors']
+    # else:
+      
+    #   np.savez_compressed(descriptor_filename, descriptors=self.descriptors)
 
 
   def generation_experiment(self, strategy, max_batch_size=1000):
@@ -143,28 +141,9 @@ def main():
   with open(VOCAB_FILE, 'r') as vocab_file:
     vocab = [line.strip() for line in vocab_file.readlines()]
   
-  # coco = COCO(COCO_ANNO_PATH % DATASET_NAME)
-  # image_root = COCO_IMAGE_PATTERN % DATASET_NAME
-  # sg = CocoSequenceGenerator(coco, BUFFER_SIZE, image_root, vocab=vocab,
-  #                            align=False, shuffle=False)
   dataset = {}
   dataset["/home/anh/src/caffe_lrcn/images/brambling.jpg"] = [("", "")]
 
-  # for image_path, sentence in sg.image_sentence_pairs:
-  #   if image_path not in dataset:
-  #     dataset[image_path] = []
-  #   dataset[image_path].append((sg.line_to_stream(sentence), sentence))
-
-
-  # print 'Original dataset contains %d images' % len(dataset.keys())
-  # if 0 <= MAX_IMAGES < len(dataset.keys()):
-  #   all_keys = dataset.keys()
-  #   perm = np.random.permutation(len(all_keys))[:MAX_IMAGES]
-  #   chosen_keys = set([all_keys[p] for p in perm])
-  #   for key in all_keys:
-  #     if key not in chosen_keys:
-  #       del dataset[key]
-  #   print 'Reduced dataset to %d images' % len(dataset.keys())
   if MAX_IMAGES < 0: MAX_IMAGES = len(dataset.keys())
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
@@ -176,12 +155,11 @@ def main():
     strategy_name = 'sample%f' % generation_strategy['temp']
   else:
     raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
+
   CACHE_DIR = '%s/%s' % (DATASET_CACHE_DIR, strategy_name)
   experimenter = CaptionExperiment(captioner, dataset, DATASET_CACHE_DIR, CACHE_DIR)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
-  # captioner.set_caption_batch_size(min(MAX_IMAGES * 5, 1000))
-  # experimenter.retrieval_experiment()
 
 if __name__ == "__main__":
   main()
