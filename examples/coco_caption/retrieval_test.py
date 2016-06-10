@@ -13,12 +13,12 @@ import sys
 # seed the RNG so we evaluate on the same subset each time
 np.random.seed(seed=0)
 
-from coco_to_hdf5_data import *
+# from coco_to_hdf5_data import *
 from test_captioner import Captioner
 
-COCO_EVAL_PATH = './data/coco/coco-caption-eval'
-sys.path.append(COCO_EVAL_PATH)
-from pycocoevalcap.eval import COCOEvalCap
+# COCO_EVAL_PATH = './data/coco/coco-caption-eval'
+# sys.path.append(COCO_EVAL_PATH)
+# from pycocoevalcap.eval import COCOEvalCap
 
 class CaptionExperiment():
   # captioner is an initialized Captioner (captioner.py)
@@ -36,34 +36,18 @@ class CaptionExperiment():
     print 'Computing image descriptors'
     self.compute_descriptors()
 
-    # num_images = len(self.images)
-    num_images = 1
-    batch_size = 1
-
     # Generate captions for all images.
-    caption = None
-    for image_index in xrange(0, num_images, batch_size):
-      batch_end_index = min(image_index + batch_size, num_images)
-        
-      temp = float('inf')
-      output_captions, output_probs = self.captioner.sample_captions(
-            self.descriptors[0], temp=temp)
+    temp = float('inf')
+    output_captions, output_probs = self.captioner.sample_captions(
+          self.descriptors[0], temp=temp)
 
-      #print ">>> output_captions", output_captions
-      caption = output_captions[0]
+    #print ">>> output_captions", output_captions
+    caption = output_captions[0]
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
     # For each image, write out the highest probability caption.
-    model_captions = ['']
-
-    # reference_captions = [([''] * len(self.images)) for _ in xrange(num_reference_files)]
-    # for image_index, image in enumerate(self.images):
-    
-    # print "+", image
-
     words_caption = self.captioner.sentence(caption)
-
     print ">>>> : [", words_caption, "]"
 
 
