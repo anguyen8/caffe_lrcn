@@ -100,11 +100,6 @@ class Captioner():
     output_preds = net.blobs[output].data[0, 0, :]
     return output_preds
 
-  def predict_single_word_from_all_previous(self, descriptor, previous_words):
-    for word in [0] + previous_words:
-      probs = self.predict_single_word(descriptor, word)
-    return probs
-
   def sample_caption(self, descriptor, strategy,
                      net_output='predict', max_length=50):
     sentence = []
