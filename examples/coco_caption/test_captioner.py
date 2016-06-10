@@ -222,62 +222,6 @@ class Captioner():
           self.image_net.blobs[output_name].data[:current_batch_size]
     return descriptors
 
-  def score_captions(self, descriptor, captions,
-                     output_name='probs', caption_source='gt', verbose=True):
-    net = self.lstm_net
-    cont_input = np.zeros_like(net.blobs['cont_sentence'].data)
-    word_input = np.zeros_like(net.blobs['input_sentence'].data)
-    image_features = np.zeros_like(net.blobs['image_features'].data)
-    batch_size = image_features.shape[0]
-    assert descriptor.shape == image_features.shape[1:]
-    for index in range(batch_size):
-      image_features[index] = descriptor
-    outputs = []
-    input_data_initialized = False
-    for batch_start_index in range(0, len(captions), batch_size):
-      caption_batch = captions[batch_start_index:(batch_start_index + batch_size)]
-      current_batch_size = len(caption_batch)
-      caption_index = 0
-      probs_batch = [[] for b in range(current_batch_size)]
-      num_done = 0
-      while num_done < current_batch_size:
-        if caption_index == 0:
-          cont_input[:] = 0
-        elif caption_index == 1:
-          cont_input[:] = 1
-        for index, caption in enumerate(caption_batch):
-          word_input[0, index] = \
-              caption['caption'][caption_index - 1] if \
-              0 < caption_index < len(caption['caption']) else 0
-        if input_data_initialized:
-          net.forward(start="embedding", input_sentence=word_input,
-                      cont_sentence=cont_input, image_features=image_features)
-        else:
-          net.forward(input_sentence=word_input, cont_sentence=cont_input,
-                      image_features=image_features)
-          input_data_initialized = True
-        output_probs = net.blobs[output_name].data
-        for index, probs, caption in \
-            zip(range(current_batch_size), probs_batch, caption_batch):
-          if caption_index == len(caption['caption']) - 1:
-            num_done += 1
-          if caption_index < len(caption['caption']):
-            word = caption['caption'][caption_index]
-            probs.append(output_probs[0, index, word].reshape(-1)[0])
-        if verbose:
-          print 'Computed probs for word %d of captions %d-%d (%d done)' % \
-              (caption_index, batch_start_index,
-               batch_start_index + current_batch_size - 1, num_done)
-        caption_index += 1
-      for prob, caption in zip(probs_batch, caption_batch):
-        output = {}
-        output['caption'] = caption['caption']
-        output['prob'] = prob
-        output['gt'] = True
-        output['source'] = caption_source
-        outputs.append(output)
-    return outputs
-
   def sample_captions(self, descriptor, prob_output_name='probs',
                       pred_output_name='predict', temp=1, max_length=50):
     descriptor = np.array(descriptor)
@@ -374,29 +318,3 @@ def random_choice_from_probs(softmax_inputs, temp=1, already_softmaxed=False):
     cum_sum += p
     if cum_sum >= r: return i
   return 1  # return UNK?
-
-def gen_stats(prob, normalizer=None):
-  stats = {}
-  stats['length'] = len(prob)
-  stats['log_p'] = 0.0
-  eps = 1e-12
-  for p in prob:
-    assert 0.0 <= p <= 1.0
-    stats['log_p'] += math.log(max(eps, p))
-  stats['log_p_word'] = stats['log_p'] / stats['length']
-  stats['p'] = math.exp(stats['log_p'])
-  stats['p_word'] = math.exp(stats['log_p'])
-  try:
-    stats['perplex'] = math.exp(-stats['log_p'])
-  except OverflowError:
-    stats['perplex'] = float('inf')
-  try:
-    stats['perplex_word'] = math.exp(-stats['log_p_word'])
-  except OverflowError:
-    stats['perplex_word'] = float('inf')
-  if normalizer is not None:
-    norm_stats = gen_stats(normalizer)
-    stats['normed_perplex'] = stats['perplex'] / norm_stats['perplex']
-    stats['normed_perplex_word'] = \
-        stats['perplex_word'] / norm_stats['perplex_word']
-  return stats
