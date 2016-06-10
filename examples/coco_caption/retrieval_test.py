@@ -48,13 +48,8 @@ class CaptionExperiment():
     print 'Computing image descriptors'
     self.compute_descriptors()
 
-    do_batches = (strategy['type'] == 'beam' and strategy['beam_size'] == 1) or \
-        (strategy['type'] == 'sample' and
-         ('temp' not in strategy or strategy['temp'] in (1, float('inf'))) and
-         ('num' not in strategy or strategy['num'] == 1))
-
     num_images = len(self.images)
-    batch_size = min(max_batch_size, num_images) if do_batches else 1
+    batch_size = 1
 
     # Generate captions for all images.
     caption = None
@@ -63,15 +58,6 @@ class CaptionExperiment():
       sys.stdout.write("\rGenerating captions for image %d/%d" %
                        (image_index, num_images))
       sys.stdout.flush()
-
-      # print "==== do_batches", do_batches # TRue
-
-      # if do_batches:
-      #   if strategy['type'] == 'beam' or \
-      #       ('temp' in strategy and strategy['temp'] == float('inf')):
-      #     
-      #   else:
-      #     temp = strategy['temp'] if 'temp' in strategy else 1
         
       temp = float('inf')
       output_captions, output_probs = self.captioner.sample_captions(
