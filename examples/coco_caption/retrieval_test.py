@@ -47,13 +47,10 @@ class CaptionExperiment():
     caption = None
     for image_index in xrange(0, num_images, batch_size):
       batch_end_index = min(image_index + batch_size, num_images)
-      sys.stdout.write("\rGenerating captions for image %d/%d" %
-                       (image_index, num_images))
-      sys.stdout.flush()
         
       temp = float('inf')
       output_captions, output_probs = self.captioner.sample_captions(
-            self.descriptors[image_index:batch_end_index], temp=temp)
+            self.descriptors[0], temp=temp)
 
       #print ">>> output_captions", output_captions
       caption = output_captions[0]
