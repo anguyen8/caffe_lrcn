@@ -14,7 +14,7 @@ import sys
 np.random.seed(seed=0)
 
 from coco_to_hdf5_data import *
-from captioner import Captioner
+from test_captioner import Captioner
 
 COCO_EVAL_PATH = './data/coco/coco-caption-eval'
 sys.path.append(COCO_EVAL_PATH)
@@ -65,10 +65,6 @@ class CaptionExperiment():
 
       #print ">>> output_captions", output_captions
       caption = output_captions[0]
-
-      # for batch_index, output in zip(range(image_index, batch_end_index),
-      #                                  output_captions):
-      #     caption = output
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
