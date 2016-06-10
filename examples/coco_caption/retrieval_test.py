@@ -66,20 +66,22 @@ class CaptionExperiment():
 
       # print "==== do_batches", do_batches # TRue
 
-      if do_batches:
-        if strategy['type'] == 'beam' or \
-            ('temp' in strategy and strategy['temp'] == float('inf')):
-          temp = float('inf')
-        else:
-          temp = strategy['temp'] if 'temp' in strategy else 1
-        output_captions, output_probs = self.captioner.sample_captions(
+      # if do_batches:
+      #   if strategy['type'] == 'beam' or \
+      #       ('temp' in strategy and strategy['temp'] == float('inf')):
+      #     temp = float('inf')
+      #   else:
+      #     temp = strategy['temp'] if 'temp' in strategy else 1
+        
+      output_captions, output_probs = self.captioner.sample_captions(
             self.descriptors[image_index:batch_end_index], temp=temp)
 
-        #print ">>> output_captions", output_captions
+      #print ">>> output_captions", output_captions
+      caption = output_captions[0]
 
-        for batch_index, output in zip(range(image_index, batch_end_index),
-                                       output_captions):
-          caption = output
+      # for batch_index, output in zip(range(image_index, batch_end_index),
+      #                                  output_captions):
+      #     caption = output
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
