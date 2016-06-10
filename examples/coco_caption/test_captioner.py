@@ -190,18 +190,6 @@ class Captioner():
     if orig_batch_size != 1: self.set_caption_batch_size(orig_batch_size)
     return beams, beam_probs
 
-  def score_caption(self, descriptor, caption, is_gt=True, caption_source='gt'):
-    output = {}
-    output['caption'] = caption
-    output['gt'] = is_gt
-    output['source'] = caption_source
-    output['prob'] = []
-    probs = self.predict_single_word(descriptor, 0)
-    for word in caption:
-      output['prob'].append(probs[word])
-      probs = self.predict_single_word(descriptor, word)
-    return output
-
   def compute_descriptors(self, image_list, output_name='fc8'):
     batch = np.zeros_like(self.image_net.blobs['data'].data)
     batch_shape = batch.shape
