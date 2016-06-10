@@ -107,6 +107,8 @@ class Captioner():
     eps_prob = 1e-8
     temp = strategy['temp'] if 'temp' in strategy else 1.0
     if max_length < 0: max_length = float('inf')
+
+    # Keep search for the next word if we have not hit an <EOS> or word limit
     while len(sentence) < max_length and (not sentence or sentence[-1] != 0):
       previous_word = sentence[-1] if sentence else 0
       softmax_inputs = self.predict_single_word(descriptor, previous_word,
