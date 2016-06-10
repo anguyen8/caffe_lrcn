@@ -65,6 +65,7 @@ class CaptionExperiment():
       sys.stdout.flush()
 
       print "==== do_batches", do_batches
+      
       if do_batches:
         if strategy['type'] == 'beam' or \
             ('temp' in strategy and strategy['temp'] == float('inf')):
