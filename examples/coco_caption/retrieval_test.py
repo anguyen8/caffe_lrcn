@@ -41,10 +41,14 @@ def main():
 
   descriptors = captioner.compute_descriptors([image_path])
 
+  print "descriptors", descriptors.shape
+
   # Generate captions for all images.
   temp = float('inf')
   output_captions, _ = captioner.sample_captions(
         descriptors[0], temp=temp)
+
+  print "output_captions", output_captions.shape
 
   #print ">>> output_captions", output_captions
   caption = output_captions[0]
