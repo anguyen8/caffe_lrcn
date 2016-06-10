@@ -143,10 +143,10 @@ def main():
   with open(VOCAB_FILE, 'r') as vocab_file:
     vocab = [line.strip() for line in vocab_file.readlines()]
   
-  coco = COCO(COCO_ANNO_PATH % DATASET_NAME)
-  image_root = COCO_IMAGE_PATTERN % DATASET_NAME
-  sg = CocoSequenceGenerator(coco, BUFFER_SIZE, image_root, vocab=vocab,
-                             align=False, shuffle=False)
+  # coco = COCO(COCO_ANNO_PATH % DATASET_NAME)
+  # image_root = COCO_IMAGE_PATTERN % DATASET_NAME
+  # sg = CocoSequenceGenerator(coco, BUFFER_SIZE, image_root, vocab=vocab,
+  #                            align=False, shuffle=False)
   dataset = {}
   dataset["/home/anh/src/caffe_lrcn/images/brambling.jpg"] = [("", "")]
 
@@ -177,7 +177,7 @@ def main():
   else:
     raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
   CACHE_DIR = '%s/%s' % (DATASET_CACHE_DIR, strategy_name)
-  experimenter = CaptionExperiment(captioner, dataset, DATASET_CACHE_DIR, CACHE_DIR, sg)
+  experimenter = CaptionExperiment(captioner, dataset, DATASET_CACHE_DIR, CACHE_DIR)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
   # captioner.set_caption_batch_size(min(MAX_IMAGES * 5, 1000))
