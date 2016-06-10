@@ -69,10 +69,11 @@ class CaptionExperiment():
       # if do_batches:
       #   if strategy['type'] == 'beam' or \
       #       ('temp' in strategy and strategy['temp'] == float('inf')):
-      #     temp = float('inf')
+      #     
       #   else:
       #     temp = strategy['temp'] if 'temp' in strategy else 1
         
+      temp = float('inf')
       output_captions, output_probs = self.captioner.sample_captions(
             self.descriptors[image_index:batch_end_index], temp=temp)
 
