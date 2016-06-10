@@ -124,17 +124,16 @@ def main():
   if MAX_IMAGES < 0: MAX_IMAGES = len(dataset.keys())
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
-  beam_size = 1
-  # generation_strategy = {'type': 'beam', 'beam_size': beam_size}
-  generation_strategy = {'type': 'sample', 'temp': float("inf")}
 
+  generation_strategy = {'type': 'beam', 'beam_size': 1}
+  # generation_strategy = {'type': 'sample', 'temp': float("inf")}
 
-  if generation_strategy['type'] == 'beam':
-    strategy_name = 'beam%d' % generation_strategy['beam_size']
-  elif generation_strategy['type'] == 'sample':
-    strategy_name = 'sample%f' % generation_strategy['temp']
-  else:
-    raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
+  # if generation_strategy['type'] == 'beam':
+  #   strategy_name = 'beam%d' % generation_strategy['beam_size']
+  # elif generation_strategy['type'] == 'sample':
+  #   strategy_name = 'sample%f' % generation_strategy['temp']
+  # else:
+  #   raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
 
   experimenter = CaptionExperiment(captioner, dataset)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
