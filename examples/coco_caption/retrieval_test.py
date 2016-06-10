@@ -16,36 +16,6 @@ np.random.seed(seed=0)
 # from coco_to_hdf5_data import *
 from test_captioner import Captioner
 
-class CaptionExperiment():
-  # captioner is an initialized Captioner (captioner.py)
-  # dataset is a dict: image path -> [caption1, caption2, ...]
-  def __init__(self, captioner, image_path):
-    self.captioner = captioner
-    self.image = image_path
-
-  def compute_descriptors(self):
-    self.descriptors = self.captioner.compute_descriptors([self.image])
-
-  def generation_experiment(self):
-    # Compute image descriptors.
-    print 'Computing image descriptors'
-    self.compute_descriptors()
-
-    # Generate captions for all images.
-    temp = float('inf')
-    output_captions, output_probs = self.captioner.sample_captions(
-          self.descriptors[0], temp=temp)
-
-    #print ">>> output_captions", output_captions
-    caption = output_captions[0]
-
-    # Collect model/reference captions, formatting the model's captions and
-    # each set of reference captions as a list of len(self.images) strings.
-    # For each image, write out the highest probability caption.
-    words_caption = self.captioner.sentence(caption)
-    print ">>>> : [", words_caption, "]"
-
-
 def main():
   MAX_IMAGES = 1  # -1 to use all images
   
@@ -67,20 +37,24 @@ def main():
                         device_id=DEVICE_ID)
 
   generation_strategy = {'type': 'beam', 'beam_size': 1}
-  # generation_strategy = {'type': 'sample', 'temp': float("inf")}
-
-  # if generation_strategy['type'] == 'beam':
-  #   strategy_name = 'beam%d' % generation_strategy['beam_size']
-  # elif generation_strategy['type'] == 'sample':
-  #   strategy_name = 'sample%f' % generation_strategy['temp']
-  # else:
-  #   raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
 
   # image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
   image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
-  experimenter = CaptionExperiment(captioner, image_path=image_path)
-  captioner.set_image_batch_size(min(100, MAX_IMAGES))
-  experimenter.generation_experiment()
+
+  descriptors = captioner.compute_descriptors([image_path])
+
+  # Generate captions for all images.
+  temp = float('inf')
+  output_captions, output_probs = captioner.sample_captions(
+        descriptors[0], temp=temp)
+
+  #print ">>> output_captions", output_captions
+  caption = output_captions[0]
+  words_caption = captioner.sentence(caption)
+  print ">>>> : [", words_caption, "]"
+
+  # experimenter = CaptionExperiment(captioner, image_path=image_path)
+  # experimenter.generation_experiment()
 
 if __name__ == "__main__":
   main()
