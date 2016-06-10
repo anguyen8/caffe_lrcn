@@ -105,23 +105,6 @@ class Captioner():
       probs = self.predict_single_word(descriptor, word)
     return probs
 
-  # Strategy must be either 'beam' or 'sample'.
-  # If 'beam', do a max likelihood beam search with beam size num_samples.
-  # Otherwise, sample with temperature temp.
-  def predict_caption(self, descriptor, strategy={'type': 'beam'}):
-    assert 'type' in strategy
-    assert strategy['type'] in ('beam', 'sample')
-    if strategy['type'] == 'beam':
-      return self.predict_caption_beam_search(descriptor, strategy)
-    num_samples = strategy['num'] if 'num' in strategy else 1
-    samples = []
-    sample_probs = []
-    for _ in range(num_samples):
-      sample, sample_prob = self.sample_caption(descriptor, strategy)
-      samples.append(sample)
-      sample_probs.append(sample_prob)
-    return samples, sample_probs
-
   def sample_caption(self, descriptor, strategy,
                      net_output='predict', max_length=50):
     sentence = []
@@ -138,57 +121,6 @@ class Captioner():
       probs.append(softmax(softmax_inputs, 1.0)[word])
     return sentence, probs
 
-  def predict_caption_beam_search(self, descriptor, strategy, max_length=50):
-    orig_batch_size = self.caption_batch_size()
-    if orig_batch_size != 1: self.set_caption_batch_size(1)
-    beam_size = strategy['beam_size'] if 'beam_size' in strategy else 1
-    assert beam_size >= 1
-    beams = [[]]
-    beams_complete = 0
-    beam_probs = [[]]
-    beam_log_probs = [0.]
-    while beams_complete < len(beams):
-      expansions = []
-      for beam_index, beam_log_prob, beam in \
-          zip(range(len(beams)), beam_log_probs, beams):
-        if beam:
-          previous_word = beam[-1]
-          if len(beam) >= max_length or previous_word == 0:
-            exp = {'prefix_beam_index': beam_index, 'extension': [],
-                   'prob_extension': [], 'log_prob': beam_log_prob}
-            expansions.append(exp)
-            # Don't expand this beam; it was already ended with an EOS,
-            # or is the max length.
-            continue
-        else:
-          previous_word = 0  # EOS is first word
-        if beam_size == 1:
-          probs = self.predict_single_word(descriptor, previous_word)
-        else:
-          probs = self.predict_single_word_from_all_previous(descriptor, beam)
-        assert len(probs.shape) == 1
-        assert probs.shape[0] == len(self.vocab)
-        expansion_inds = probs.argsort()[-beam_size:]
-        for ind in expansion_inds:
-          prob = probs[ind]
-          extended_beam_log_prob = beam_log_prob + math.log(prob)
-          exp = {'prefix_beam_index': beam_index, 'extension': [ind],
-                 'prob_extension': [prob], 'log_prob': extended_beam_log_prob}
-          expansions.append(exp)
-      # Sort expansions in decreasing order of probability.
-      expansions.sort(key=lambda expansion: -1 * expansion['log_prob'])
-      expansions = expansions[:beam_size]
-      new_beams = \
-          [beams[e['prefix_beam_index']] + e['extension'] for e in expansions]
-      new_beam_probs = \
-          [beam_probs[e['prefix_beam_index']] + e['prob_extension'] for e in expansions]
-      beam_log_probs = [e['log_prob'] for e in expansions]
-      beams_complete = 0
-      for beam in new_beams:
-        if beam[-1] == 0 or len(beam) >= max_length: beams_complete += 1
-      beams, beam_probs = new_beams, new_beam_probs
-    if orig_batch_size != 1: self.set_caption_batch_size(orig_batch_size)
-    return beams, beam_probs
 
   def compute_descriptors(self, image_list, output_name='fc8'):
     batch = np.zeros_like(self.image_net.blobs['data'].data)
@@ -209,61 +141,6 @@ class Captioner():
       descriptors[batch_start_index:(batch_start_index + current_batch_size)] = \
           self.image_net.blobs[output_name].data[:current_batch_size]
     return descriptors
-
-  def sample_captions(self, descriptor, prob_output_name='probs',
-                      pred_output_name='predict', temp=1, max_length=50):
-    descriptor = np.array(descriptor)
-    batch_size = descriptor.shape[0]
-    self.set_caption_batch_size(batch_size)
-    net = self.lstm_net
-    cont_input = np.zeros_like(net.blobs['cont_sentence'].data)
-    word_input = np.zeros_like(net.blobs['input_sentence'].data)
-    image_features = np.zeros_like(net.blobs['image_features'].data)
-    image_features[:] = descriptor
-    outputs = []
-    output_captions = [[] for b in range(batch_size)]
-    output_probs = [[] for b in range(batch_size)]
-    caption_index = 0
-    num_done = 0
-    while num_done < batch_size and caption_index < max_length:
-      if caption_index == 0:
-        cont_input[:] = 0
-      elif caption_index == 1:
-        cont_input[:] = 1
-      if caption_index == 0:
-        word_input[:] = 0
-      else:
-        for index in range(batch_size):
-          word_input[0, index] = \
-              output_captions[index][caption_index - 1] if \
-              caption_index <= len(output_captions[index]) else 0
-      net.forward(image_features=image_features, cont_sentence=cont_input,
-                  input_sentence=word_input)
-      if temp == 1.0 or temp == float('inf'):
-        net_output_probs = net.blobs[prob_output_name].data[0]
-        samples = [
-            random_choice_from_probs(dist, temp=temp, already_softmaxed=True)
-            for dist in net_output_probs
-        ]
-      else:
-        net_output_preds = net.blobs[pred_output_name].data[0]
-        samples = [
-            random_choice_from_probs(preds, temp=temp, already_softmaxed=False)
-            for preds in net_output_preds
-        ]
-      for index, next_word_sample in enumerate(samples):
-        # If the caption is empty, or non-empty but the last word isn't EOS,
-        # predict another word.
-        if not output_captions[index] or output_captions[index][-1] != 0:
-          output_captions[index].append(next_word_sample)
-          output_probs[index].append(net_output_probs[index, next_word_sample])
-          if next_word_sample == 0: num_done += 1
-      sys.stdout.write('\r%d/%d done after word %d' %
-          (num_done, batch_size, caption_index))
-      sys.stdout.flush()
-      caption_index += 1
-    sys.stdout.write('\n')
-    return output_captions, output_probs
 
   def sentence(self, vocab_indices):
     sentence = ' '.join([self.vocab[i] for i in vocab_indices])
