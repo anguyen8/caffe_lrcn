@@ -36,10 +36,8 @@ def main():
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
 
-  generation_strategy = {'type': 'beam', 'beam_size': 1}
-
-  image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
-  # image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
+  # image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
+  image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
 
   descriptors = captioner.compute_descriptors([image_path])
 
