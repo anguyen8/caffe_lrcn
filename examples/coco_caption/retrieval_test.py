@@ -48,9 +48,7 @@ def main():
   strategy = { "type": "sample", "temp": float("inf")}
   caption, _ = captioner.sample_caption(descriptor, strategy=strategy)
 
-  # print "output_captions", len(output_captions)
-
-  #print ">>> output_captions", output_captions
+  print ">>> output_captions", caption
   
   words_caption = captioner.sentence(caption)
   print ">>>> : [", words_caption, "]"
