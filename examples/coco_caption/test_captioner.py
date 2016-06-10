@@ -95,6 +95,11 @@ class Captioner():
     word_input = np.array([previous_word])
     image_features = np.zeros_like(net.blobs['image_features'].data)
     image_features[:] = descriptor
+
+    print "image_features", image_features.shape
+    print "word_input", word_input
+    print "cont_input", cont_input
+
     net.forward(image_features=image_features, cont_sentence=cont_input,
                 input_sentence=word_input)
     output_preds = net.blobs[output].data[0, 0, :]
