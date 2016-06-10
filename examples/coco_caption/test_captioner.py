@@ -43,20 +43,6 @@ class Captioner():
       raise Exception('Invalid vocab file: contains %d words; '
           'net expects vocab with %d words' % (len(self.vocab), net_vocab_size))
 
-  def set_image_batch_size(self, batch_size):
-    self.image_net.blobs['data'].reshape(batch_size,
-        *self.image_net.blobs['data'].data.shape[1:])
-
-  def caption_batch_size(self):
-    return self.lstm_net.blobs['cont_sentence'].data.shape[1]
-
-  def set_caption_batch_size(self, batch_size):
-    self.lstm_net.blobs['cont_sentence'].reshape(1, batch_size)
-    self.lstm_net.blobs['input_sentence'].reshape(1, batch_size)
-    self.lstm_net.blobs['image_features'].reshape(batch_size,
-        *self.lstm_net.blobs['image_features'].data.shape[1:])
-    self.lstm_net.reshape()
-
   def preprocess_image(self, image, verbose=False):
     if type(image) in (str, unicode):
       image = plt.imread(image)
@@ -96,9 +82,9 @@ class Captioner():
     image_features = np.zeros_like(net.blobs['image_features'].data)
     image_features[:] = descriptor
 
-    print "image_features", image_features.shape
-    print "word_input", word_input
-    print "cont_input", cont_input
+    print "image_features", image_features.shape # image descriptors
+    print "word_input", word_input               # predicted words
+    print "cont_input", cont_input               # Continuing or not
 
     net.forward(image_features=image_features, cont_sentence=cont_input,
                 input_sentence=word_input)
