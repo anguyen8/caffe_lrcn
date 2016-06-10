@@ -126,7 +126,7 @@ def main():
                         device_id=DEVICE_ID)
   beam_size = 1
   # generation_strategy = {'type': 'beam', 'beam_size': beam_size}
-  generation_strategy = {'type': 'sample', 'temp': "inf"}
+  generation_strategy = {'type': 'sample', 'temp': float("inf")}
 
 
   if generation_strategy['type'] == 'beam':
