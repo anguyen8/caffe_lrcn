@@ -38,8 +38,7 @@ class CaptionExperiment():
     print 'Initialized caption experiment: %d images, %d captions' % \
         (len(self.images), len(self.captions))
 
-    self.images[0] = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
-    # print "+++", self.images
+    print "+++", self.images
 
   def init_caption_list(self, dataset):
     self.captions = []
@@ -126,6 +125,7 @@ def main():
     #MODEL_FILENAME = 'lrcn_caffenet_finetune_iter_%d' % ITER
     MODEL_FILENAME = 'lrcn_caffenet_iter_%d' % ITER
     DATASET_NAME = 'val'
+
   TAG += '_%s' % DATASET_NAME
   #MODEL_DIR = './examples/coco_caption'
   MODEL_DIR = "/raid/anh/from_jeffdonahue_lrcn"
