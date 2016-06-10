@@ -88,7 +88,8 @@ def main():
   # else:
   #   raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
 
-  image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
+  image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
+  # image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
   experimenter = CaptionExperiment(captioner, image_path=image_path)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
