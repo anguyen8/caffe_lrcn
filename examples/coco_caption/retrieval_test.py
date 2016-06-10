@@ -23,13 +23,9 @@ from pycocoevalcap.eval import COCOEvalCap
 class CaptionExperiment():
   # captioner is an initialized Captioner (captioner.py)
   # dataset is a dict: image path -> [caption1, caption2, ...]
-  def __init__(self, captioner, dataset, dataset_cache_dir, cache_dir):
+  def __init__(self, captioner, dataset):
     self.captioner = captioner
-    # self.dataset_cache_dir = dataset_cache_dir
-    self.cache_dir = cache_dir
-    for d in [dataset_cache_dir, cache_dir]:
-      if not os.path.exists(d): os.makedirs(d)
-    # self.dataset = dataset
+    
     self.images = dataset.keys()
     self.init_caption_list(dataset)
 
@@ -46,13 +42,6 @@ class CaptionExperiment():
 
   def compute_descriptors(self):
     self.descriptors = self.captioner.compute_descriptors(self.images)
-    # descriptor_filename = '%s/descriptors.npz' % self.dataset_cache_dir
-    # if os.path.exists(descriptor_filename):
-    #   self.descriptors = np.load(descriptor_filename)['descriptors']
-    # else:
-      
-    #   np.savez_compressed(descriptor_filename, descriptors=self.descriptors)
-
 
   def generation_experiment(self, strategy, max_batch_size=1000):
     # Compute image descriptors.
@@ -91,9 +80,6 @@ class CaptionExperiment():
 
     # Collect model/reference captions, formatting the model's captions and
     # each set of reference captions as a list of len(self.images) strings.
-    exp_dir = '%s/generation' % self.cache_dir
-    if not os.path.exists(exp_dir):
-      os.makedirs(exp_dir)
     # For each image, write out the highest probability caption.
     model_captions = [''] * len(self.images)
     # reference_captions = [([''] * len(self.images)) for _ in xrange(num_reference_files)]
@@ -133,9 +119,7 @@ def main():
   IMAGE_NET_FILE = './models/bvlc_reference_caffenet/deploy.prototxt'
   LSTM_NET_FILE = './examples/coco_caption/lrcn_word_to_preds.deploy.prototxt'
   NET_TAG = '%s_%s' % (TAG, MODEL_FILENAME)
-  DATASET_SUBDIR = '%s/%s_ims' % (DATASET_NAME,
       str(MAX_IMAGES) if MAX_IMAGES >= 0 else 'all')
-  DATASET_CACHE_DIR = './retrieval_cache/%s/%s' % (DATASET_SUBDIR, MODEL_FILENAME)
   VOCAB_FILE = './examples/coco_caption/h5_data/buffer_100/vocabulary.txt'
   DEVICE_ID = 0
   with open(VOCAB_FILE, 'r') as vocab_file:
@@ -156,8 +140,7 @@ def main():
   else:
     raise Exception('Unknown generation strategy type: %s' % generation_strategy['type'])
 
-  CACHE_DIR = '%s/%s' % (DATASET_CACHE_DIR, strategy_name)
-  experimenter = CaptionExperiment(captioner, dataset, DATASET_CACHE_DIR, CACHE_DIR)
+  experimenter = CaptionExperiment(captioner, dataset)
   captioner.set_image_batch_size(min(100, MAX_IMAGES))
   experimenter.generation_experiment(generation_strategy)
 
