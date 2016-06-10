@@ -39,16 +39,13 @@ def main():
   # image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
   image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
 
-  descriptors = captioner.compute_descriptors([image_path])
-
-  print "descriptors", descriptors.shape
+  descriptor = captioner.compute_descriptors([image_path]).flat  # Get 1000 fc8 numbers from (1,1000) tensor
 
   # Generate captions for all images.
   temp = float('inf')
-  output_captions, _ = captioner.sample_captions(
-        descriptors[0], temp=temp)
+  output_captions, _ = captioner.sample_captions( descriptor, temp=temp )
 
-  print "output_captions", output_captions.shape
+  # print "output_captions", len(output_captions)
 
   #print ">>> output_captions", output_captions
   caption = output_captions[0]
