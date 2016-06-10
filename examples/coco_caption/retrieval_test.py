@@ -64,8 +64,8 @@ class CaptionExperiment():
                        (image_index, num_images))
       sys.stdout.flush()
 
-      print "==== do_batches", do_batches
-      
+      # print "==== do_batches", do_batches # TRue
+
       if do_batches:
         if strategy['type'] == 'beam' or \
             ('temp' in strategy and strategy['temp'] == float('inf')):
@@ -125,7 +125,10 @@ def main():
   captioner = Captioner(MODEL_FILE, IMAGE_NET_FILE, LSTM_NET_FILE, VOCAB_FILE,
                         device_id=DEVICE_ID)
   beam_size = 1
-  generation_strategy = {'type': 'beam', 'beam_size': beam_size}
+  # generation_strategy = {'type': 'beam', 'beam_size': beam_size}
+  generation_strategy = {'type': 'sample', 'temp': "inf"}
+
+
   if generation_strategy['type'] == 'beam':
     strategy_name = 'beam%d' % generation_strategy['beam_size']
   elif generation_strategy['type'] == 'sample':
