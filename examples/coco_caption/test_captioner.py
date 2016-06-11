@@ -84,15 +84,14 @@ class Captioner():
     image_features = np.zeros_like(net.blobs['image_features'].data)
     image_features[:] = descriptor
 
-    print "image_features", image_features.shape # image descriptors
-    print "word_input", word_input               # predicted words
-    print "cont_input", cont_input               # Continuing or not
+    # print "image_features", image_features.shape # image descriptors
+    # print "word_input", word_input               # predicted words
+    # print "cont_input", cont_input               # Continuing or not
 
     net.forward(image_features=image_features, cont_sentence=cont_input,
                 input_sentence=word_input)
 
-    print "predict_single_word", output
-    
+    # output: 'predict'
     output_preds = net.blobs[output].data[0, 0, :]
     return output_preds
 
@@ -109,6 +108,9 @@ class Captioner():
       previous_word = sentence[-1] if sentence else 0
       softmax_inputs = self.predict_single_word(descriptor, previous_word,
                                                 output=net_output)
+
+      print "+s ", softmax_inputs
+
       word = random_choice_from_probs(softmax_inputs, temp)
       sentence.append(word)
       probs.append(softmax(softmax_inputs, 1.0)[word])
