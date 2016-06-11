@@ -85,7 +85,7 @@ class Captioner():
     image_features[:] = descriptor
 
     # print "image_features", image_features.shape # image descriptors
-    # print "word_input", word_input               # predicted words
+    print "word_input", word_input               # predicted words
     # print "cont_input", cont_input               # Continuing or not
 
     net.forward(image_features=image_features, cont_sentence=cont_input,
@@ -109,7 +109,7 @@ class Captioner():
       softmax_inputs = self.predict_single_word(descriptor, previous_word,
                                                 output=net_output)
 
-      print "+s ", softmax_inputs
+      print "+s ", np.argmax(softmax_inputs)
 
       word = random_choice_from_probs(softmax_inputs, temp)
       sentence.append(word)
