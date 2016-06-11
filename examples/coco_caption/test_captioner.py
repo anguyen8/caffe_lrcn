@@ -71,8 +71,10 @@ class Captioner():
     descriptor = net.blobs[output_name].data[0].copy()
     return descriptor
 
+
   def image_to_descriptor(self, image, output_name='fc8'):
     return self.preprocessed_image_to_descriptor(self.preprocess_image(image))
+
 
   def predict_single_word(self, descriptor, previous_word, output='probs'):
     net = self.lstm_net
@@ -88,6 +90,9 @@ class Captioner():
 
     net.forward(image_features=image_features, cont_sentence=cont_input,
                 input_sentence=word_input)
+
+    print "predict_single_word", output
+    
     output_preds = net.blobs[output].data[0, 0, :]
     return output_preds
 
