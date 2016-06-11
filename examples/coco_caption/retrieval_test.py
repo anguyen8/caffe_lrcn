@@ -37,7 +37,7 @@ def main():
                         device_id=DEVICE_ID)
 
   # image_path = "/home/anh/src/caffe_lrcn/images/bellpeppers.jpg"
-  image_path = "/home/anh/src/caffe_lrcn/images/brambling.jpg"
+  image_path = str(sys.argv[1]) #"/home/anh/src/caffe_lrcn/images/brambling.jpg"
 
   descriptor = captioner.compute_descriptors([image_path]).flat  # Get 1000 fc8 numbers from (1,1000) tensor
 
