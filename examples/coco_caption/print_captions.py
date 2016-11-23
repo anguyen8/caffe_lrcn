@@ -151,7 +151,12 @@ class CaptionExperiment():
     self.compute_descriptors()
 
     num_images, num_captions = len(self.images), len(self.captions)
-
+    for c in self.captions:
+        words = c['caption']
+        if len(words) <= 15:
+            print self.captioner.sentence(words).replace("...", "").replace(" ","_").lower()
+    return None
+#    self.captioner.sentence(self.captions[image_index])
     print self.captions
     # For each image, score all captions.
     for image_index in xrange(num_images):
@@ -314,7 +319,7 @@ def gen_stats(prob):
   return stats
 
 def main():
-  MAX_IMAGES = 100  # -1 to use all images
+  MAX_IMAGES = 1000  # -1 to use all images
   TAG = 'coco_2layer_factored'
   if MAX_IMAGES >= 0:
     TAG += '_%dimages' % MAX_IMAGES

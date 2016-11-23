@@ -11,6 +11,7 @@ import sys
 
 sys.path.append('./python/')
 import caffe
+import ipdb
 
 class Captioner():
   def __init__(self, weights_path, image_net_proto, lstm_net_proto,
@@ -20,6 +21,9 @@ class Captioner():
       caffe.set_device(device_id)
     else:
       caffe.set_mode_cpu()
+
+    caffe.set_random_seed(0)
+
     # Setup image processing net.
     phase = caffe.TEST
     self.image_net = caffe.Net(image_net_proto, weights_path, phase)
@@ -91,9 +95,11 @@ class Captioner():
     net.forward(image_features=image_features, cont_sentence=cont_input,
                 input_sentence=word_input)
 
+#    ipdb.set_trace()
     # output: 'predict'
     output_preds = net.blobs[output].data[0, 0, :]
     return output_preds
+
 
   def sample_caption(self, descriptor, strategy,
                      net_output='predict', max_length=50):
@@ -109,7 +115,7 @@ class Captioner():
       softmax_inputs = self.predict_single_word(descriptor, previous_word,
                                                 output=net_output)
 
-      print "+s ", np.argmax(softmax_inputs)
+      print "+s ", np.argmax(softmax_inputs) #, np.max(softmax_inputs)
 
       word = random_choice_from_probs(softmax_inputs, temp)
       sentence.append(word)
